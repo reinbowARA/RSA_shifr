@@ -13,6 +13,7 @@ namespace RSA
             /* p и q простые числа. Они не равны друг другу. Желательно использовать большие числа*/
             int p; 
             int q;
+
             do
             { 
                 Write("Введите простое число p: ");
@@ -32,37 +33,38 @@ namespace RSA
 
             int n = p * q; //находим n
             WriteLine($"Число n = {n}");
-            int EilerFun = (p-1)*(q-1);//находим функцию Эйлера (тотиент)
-            WriteLine($"Функция Эйлера = {EilerFun}");
-            /* выбираем случайное число e такое, что оно больше 1, меньше n и относительно простое к функции Эйлера */
-            int e;
+
+            int EilerFun = (p-1)*(q-1); //находим функцию Эйлера (тотиент)
+           // WriteLine($"Функция Эйлера = {EilerFun}");
+
+            int d;
             do
             {
-                Write("Введите случайное число e: ");
-                e = Int32.Parse(ReadLine());
-                if (e <= 1 || e > n || GCD(EilerFun, e) != 1)
-                {
-                    WriteLine("Число e должно быть больше 1, меньше n, и относительно простое к Функции Эйлера");
-                }
-            } while (e <= 1 || e > n || GCD(EilerFun, e) != 1);
-            /*Находим число d*/
-            var e_sqr = BigInteger.Pow(e,Eyler(EilerFun)-1);
-            var d = e_sqr%EilerFun;
-            WriteLine($"Число d = {d}");
-            Clear();
+                Write("Введите число d:");
+                d = Int32.Parse(ReadLine());
+
+            } while (GCD(d,EilerFun) != 1);
+            int e;
+            int k = 1;
+            do
+            {
+                e = (1 + k*(EilerFun))/d;
+                k++;
+            } while (Double.IsNaN(e));
+            WriteLine($"Число е: {e}");
             /*
                 Шифрование текста
                                     */
             Write("Введите случайное число, каторое хотите заифровать: ");
             int m = Int32.Parse(ReadLine()); //какой-то текст
-            int c = 1; //шифрованный тектс
+            int c = 1; //шифрованный текст
 
             //шифрование: c = m^e(mod n)
             for (int i = 0; i < e; i++)
             {
-                c = c*m;
-                c = c%n;
+                c *= m;
             }
+            c = c%n;
             WriteLine("Текст зашифрован");
             WriteLine($"Результат: {c}");
 
@@ -71,8 +73,8 @@ namespace RSA
             for (int i = 0; i < d; i++)
             {
                 m = m*c;
-                m = m%n;
             }
+            m = m%n;
             WriteLine("Текст дешифрован");
             WriteLine($"Результат: {m}");
         }
